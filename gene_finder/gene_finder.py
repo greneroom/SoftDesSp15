@@ -233,6 +233,9 @@ def salmonella_dna_finder():
         print gene
 
 if __name__ == "__main__":
+    """
     import doctest
     doctest.testmod()
+    """
+    print find_all_ORFs_both_strands('ATGCATGAATGTAG')
     salmonella_dna_finder()
