@@ -1,6 +1,7 @@
 """ TODO: Put your header comment here """
 
 import random
+import math
 from PIL import Image
 
 
@@ -15,8 +16,35 @@ def build_random_function(min_depth, max_depth):
                  (see assignment writeup for details on the representation of
                  these functions)
     """
-    # TODO: implement this
-    pass
+    #if max_depth == 1, return either x or y
+    if max_depth == 1:
+        if random.random() < 0.5:
+            return ["x"]
+        else:
+            return ["y"]
+
+    #if min_depth == 1, then we should not go any deeper in the tree min_depth/max_depth potion of the time
+    #ie, if min_depth = 1 and max_depth = 2, then we should stop the tree 1/2 the time
+    if min_depth == 1:
+        if random.random() < ((min_depth + 0.0) / max_depth):
+            return build_random_function(min_depth, 1)
+        else:
+            min_depth += 1
+
+    #create a random int from [0, 3] to randomly choose one of the 4 possibilities
+    random_number = random.randint(0, 3)
+    if random_number == 0:
+        return ["prod", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
+    elif random_number == 1:
+        return ["avg", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
+    elif random_number == 2:
+        return ["cos_pi", build_random_function(min_depth - 1, max_depth - 1)]
+    elif random_number == 3:
+        return ["sin_pi", build_random_function(min_depth - 1, max_depth - 1)]
+    elif random_number == 4:
+        return ["x", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
+    elif random_number == 5:
+        return ["y", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
 
 
 def evaluate_random_function(f, x, y):
@@ -33,8 +61,22 @@ def evaluate_random_function(f, x, y):
         >>> evaluate_random_function(["y"],0.1,0.02)
         0.02
     """
-    # TODO: implement this
-    pass
+    if len(f) == 1:
+        if f == ["x"]:
+            return x
+        elif f == ["y"]:
+            return y
+    elif len(f) == 2:
+        if f[0] == "sin_pi":
+            return math.sin(math.pi * evaluate_random_function(f[1], x, y))
+        elif f[0] == "cos_pi":
+            return math.cos(math.pi * evaluate_random_function(f[1], x, y))
+    elif len(f) == 3:
+        if f[0] == "prod":
+            return evaluate_random_function(f[1], x, y) * evaluate_random_function(f[2], x, y)
+        elif f[0] == "avg":
+            return 0.5 * (evaluate_random_function(f[1], x, y) + evaluate_random_function(f[2], x, y))
+    raise ValueError('Unable to evaluate function ' + f)
 
 
 def remap_interval(val, input_interval_start, input_interval_end, output_interval_start, output_interval_end):
@@ -60,8 +102,11 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
         >>> remap_interval(5, 4, 6, 1, 2)
         1.5
     """
-    # TODO: implement this
-    pass
+    input_interval_range = input_interval_end - input_interval_start
+    output_interval_range = output_interval_end - output_interval_start
+    portion_of_input = (val - input_interval_start + 0.0) / input_interval_range
+    output = portion_of_input * output_interval_range + output_interval_start
+    return output 
 
 
 def color_map(val):
@@ -112,9 +157,9 @@ def generate_art(filename, x_size=350, y_size=350):
         x_size, y_size: optional args to set image dimensions (default: 350)
     """
     # Functions for red, green, and blue channels - where the magic happens!
-    red_function = ["x"]
-    green_function = ["y"]
-    blue_function = ["x"]
+    red_function = build_random_function(10, 10)
+    green_function = build_random_function(10, 10)
+    blue_function = build_random_function(10, 10)
 
     # Create image and loop over all pixels
     im = Image.new("RGB", (x_size, y_size))
@@ -139,8 +184,10 @@ if __name__ == '__main__':
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
     #       implement remap_interval and evaluate_random_function
-    #generate_art("myart.png")
+    generate_art("myart_6.png")
+
+    #print build_random_function(1, 1)
 
     # Test that PIL is installed correctly
     # TODO: Comment or remove this function call after testing PIL install
-    test_image("noise.png")
+    #test_image("noise.png")
