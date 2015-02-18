@@ -3,6 +3,10 @@
 import random
 import math
 from PIL import Image
+import wave
+import numpy as np
+import matplotlib.pyplot as plt
+import shutil
 
 
 def build_random_function(min_depth, max_depth):
@@ -18,9 +22,10 @@ def build_random_function(min_depth, max_depth):
     """
     #if max_depth == 1, return either x or y
     if max_depth == 1:
-        if random.random() < 0.5:
+        rand_int = random.randint(0, 1)
+        if rand_int == 0:
             return ["x"]
-        else:
+        elif rand_int == 1:
             return ["y"]
 
     #if min_depth == 1, then we should not go any deeper in the tree min_depth/max_depth potion of the time
@@ -31,8 +36,8 @@ def build_random_function(min_depth, max_depth):
         else:
             min_depth += 1
 
-    #create a random int from [0, 3] to randomly choose one of the 4 possibilities
-    random_number = random.randint(0, 3)
+    #create a random int from [0, 4] to randomly choose one of the 5 possibilities
+    random_number = random.randint(0, 4)
     if random_number == 0:
         return ["prod", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
     elif random_number == 1:
@@ -42,10 +47,13 @@ def build_random_function(min_depth, max_depth):
     elif random_number == 3:
         return ["sin_pi", build_random_function(min_depth - 1, max_depth - 1)]
     elif random_number == 4:
+        return ["half_diff", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
+    """
+    elif random_number == 4:
         return ["x", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
     elif random_number == 5:
         return ["y", build_random_function(min_depth - 1, max_depth - 1), build_random_function(min_depth - 1, max_depth - 1)]
-
+    """
 
 def evaluate_random_function(f, x, y):
     """ Evaluate the random function f with inputs x,y
@@ -76,6 +84,8 @@ def evaluate_random_function(f, x, y):
             return evaluate_random_function(f[1], x, y) * evaluate_random_function(f[2], x, y)
         elif f[0] == "avg":
             return 0.5 * (evaluate_random_function(f[1], x, y) + evaluate_random_function(f[2], x, y))
+        elif f[0] == "half_diff":
+            return 0.5 * ((evaluate_random_function(f[1], x, y) - evaluate_random_function(f[2], x, y)))
     raise ValueError('Unable to evaluate function ' + f)
 
 
@@ -176,6 +186,86 @@ def generate_art(filename, x_size=350, y_size=350):
 
     im.save(filename)
 
+def generate_art_frames(volumes, folder, filename, x_size=350, y_size=350):
+
+    red_function = build_random_function(3, 7)
+    green_function = build_random_function(3, 7)
+    blue_function = build_random_function(3, 7)
+
+    for k, vol in enumerate(reversed(volumes)):
+        # Create image and loop over all pixels
+        im = Image.new("RGB", (x_size, y_size))
+        pixels = im.load()
+        for i in range(x_size):
+            for j in range(y_size):
+                x = remap_interval(i, 0, x_size, -1, 1)
+                y = remap_interval(j, 0, y_size, -1, 1)
+                pixels[i, j] = (
+                        color_map(evaluate_random_function(red_function, x * vol, y * vol)),
+                        color_map(evaluate_random_function(green_function, x * vol, y * vol)),
+                        color_map(evaluate_random_function(blue_function, x * vol, y * vol))
+                        )
+
+        im.save(folder + "/" + filename + "%03d" % round(vol*100, 0) + ".png")
+
+def re_order_frames(from_folder, from_file_name, to_folder, volumes):
+    for i, vol in enumerate(volumes):
+        current_volume_image_name = from_folder + "/" + from_file_name + "%03d" % round(vol*100, 0) + ".png"
+        reorder_volume_image_name = to_folder + "/" + from_file_name + "%05d" % i + ".png"
+        shutil.copyfile(current_volume_image_name, reorder_volume_image_name)
+
+def create_video_from_audio(sound_file_name):
+    #import the song
+    song = wave.open(sound_file_name, 'r')
+
+    #get the amplitude of the volume
+    signal = song.readframes(-1)
+    signal = np.fromstring(signal, 'Int16')
+
+    #split volume into its left and right components
+    left_channel = signal[::2]
+    right_channel = signal[1::2]
+
+    frame_rate = song.getframerate()
+    #Vid will be 24 f/s, figure out how many song frames we need to compress per vid frame
+    song_frames_per_vid_frame = frame_rate / 24.0
+    loop_control = 0
+
+    #Initialize the volumes, where each item in the list is a volume level for 1/24 of a sec
+    volumes = []
+
+    while round(loop_control, 0) < len(left_channel):
+        #get the start and end index for this 24th of a second
+        begin_index = round(loop_control, 0)
+        end_index = round(loop_control + song_frames_per_vid_frame, 0)
+        end_index = min([end_index, len(left_channel)])
+
+        #get the part of the channels that is in this 24th of a second
+        left_subset = left_channel[begin_index:end_index]
+        right_subset = right_channel[begin_index:end_index]
+
+        #average the volume over the course of the 24th of a second
+        left_avg = sum(left_subset) / float(len(left_subset))
+        right_avg = sum(right_subset) / float(len(right_subset))
+
+        #average the two channels
+        avg_vol = 0.5 * (left_avg + right_avg)
+
+        #add the volume over the 24th of a second to volumes
+        volumes.append(avg_vol)
+        loop_control += song_frames_per_vid_frame
+
+    max_vol = max(volumes) / 2.0
+    min_vol = min(volumes) / 2.0
+
+    #scale the volume numbers from -1 to 1, where -1 and 1 represent half of the max volume. Then take absolute value to scale from 0 to 1.
+    for (i, vol) in enumerate(volumes):
+        volumes[i] = 2 * round(abs(min([max([remap_interval(vol, min_vol, max_vol, -0.5, 0.5), -0.5]), 0.5])), 2)
+
+    volume_possibilities = np.linspace(0, 1, num=51)
+    #generate_art_frames(volume_possibilities, "Burn_lib", "pic")
+    re_order_frames("Burn_lib", "pic", "Burn_song", volumes)
+
 
 if __name__ == '__main__':
     import doctest
@@ -184,7 +274,8 @@ if __name__ == '__main__':
     # Create some computational art!
     # TODO: Un-comment the generate_art function call after you
     #       implement remap_interval and evaluate_random_function
-    generate_art("myart_6.png")
+    #generate_art("myart_6.png")
+    create_video_from_audio('Burn.wav')
 
     #print build_random_function(1, 1)
 
