@@ -38,6 +38,8 @@ def get_complement(nucleotide):
         return 'C'
     elif nucleotide == 'T':
         return 'A'
+    else:
+        return "Nucleotide not found"  #error handling is a good practice to get into
 
 
 def get_reverse_complement(dna):
@@ -79,7 +81,7 @@ def rest_of_ORF(dna):
     end_index = len(dna)
     stop_codons = ['TAG', 'TAA', 'TGA']
 
-    while i < len(dna) - 2:
+    while i < len(dna) - 2: #while loops are cool, but for loops avoid infinite looping
         codon = dna[i:i+3]
         if codon in stop_codons:
             end_index = i
@@ -130,7 +132,7 @@ def find_all_ORFs(dna):
 
     orfs = [];
 
-    for i in range(0, 3):
+    for i in range(3): #range assumes starting at 0
         orf_in_frame = find_all_ORFs_oneframe(dna[i:])
         orfs.extend(orf_in_frame)
 
@@ -178,7 +180,7 @@ def longest_ORF_noncoding(dna, num_trials):
         length = len(longest_ORF(shuffle))
         lengths.append(length)
 
-    return max(lengths)
+    return max(lengths) #interesting approach, but it works so I'm good
 
 
 def coding_strand_to_AA(dna):
@@ -196,7 +198,11 @@ def coding_strand_to_AA(dna):
         'MPA'
     """
 
-<<<<<<< HEAD
+
+"""
+These merge conflicts MUST be resolved when committing final code. This script will not run
+because of this. Simply delete parts of the merge conflict that you don't want.
+"""
     i = 0
     amino_acids = ''
     while i < len(dna) - 2:
@@ -209,11 +215,6 @@ def coding_strand_to_AA(dna):
 def gene_finder(dna):
     """ Returns the amino acid sequences coded by all genes that have an ORF
         larger than the specified threshold.
-=======
-def gene_finder(dna):
-    """ Returns the amino acid sequences that are likely coded by the specified dna
->>>>>>> 922a6e32441860ab0413630f74531e6e47a16a7c
-        
         dna: a DNA sequence
         returns: a list of all amino acid sequences coded by the sequence dna.
     """
@@ -232,7 +233,7 @@ def salmonella_dna_finder():
     dna = load_seq("./data/X73525.fa")
     genes = gene_finder(dna)
     for gene in genes:
-        print gene
+        print gene #nice separation of genes, makes for easier reading
 
 if __name__ == "__main__":
     """
