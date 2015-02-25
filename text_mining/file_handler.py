@@ -26,7 +26,8 @@ def line_to_char_and_quote(line):
         if char_name.isupper():
             next_colon = line.find(': ', colon_loc + 2)
             next_break = line.find('----------', colon_loc + 2)
-            whitespace_break = None
+            first_break_char_index = min(next_colon, next_break)
+            whitespace_break = next(i for i, c in enumerate(reversed(line[:first_break_char_index])))
             pass
 
 
