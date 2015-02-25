@@ -1,4 +1,4 @@
-""" TODO: Put your header comment here """
+""" TODO: Put your header comment here """ #Where's header comment?
 
 import random
 import math
@@ -20,13 +20,14 @@ def build_random_function(min_depth, max_depth):
                  (see assignment writeup for details on the representation of
                  these functions)
     """
-    #if max_depth == 1, return either x or y
+    #if max_depth == 1, return either x or y  <--Nice comments, much appreciated
     if max_depth == 1:
         rand_int = random.randint(0, 1)
-        if rand_int == 0:
-            return ["x"]
-        elif rand_int == 1:
-            return ["y"]
+        return ["x", "y"][rand_int] #works too
+        #if rand_int == 0:
+        #    return ["x"]
+        #elif rand_int == 1:
+        #    return ["y"]
 
     #if min_depth == 1, then we should not go any deeper in the tree min_depth/max_depth potion of the time
     #ie, if min_depth = 1 and max_depth = 2, then we should stop the tree 1/2 the time
@@ -69,7 +70,12 @@ def evaluate_random_function(f, x, y):
         >>> evaluate_random_function(["y"],0.1,0.02)
         0.02
     """
-    if len(f) == 1:
+    #don't really need to do the length checking
+    func = f[0]
+    if func == "sin_pi":
+        pass #etc etc
+    
+    if len(f) == 1: 
         if f == ["x"]:
             return x
         elif f == ["y"]:
@@ -114,7 +120,7 @@ def remap_interval(val, input_interval_start, input_interval_end, output_interva
     """
     input_interval_range = input_interval_end - input_interval_start
     output_interval_range = output_interval_end - output_interval_start
-    portion_of_input = (val - input_interval_start + 0.0) / input_interval_range
+    portion_of_input = (val - input_interval_start) ./ input_interval_range #works too
     output = portion_of_input * output_interval_range + output_interval_start
     return output 
 
@@ -272,7 +278,7 @@ if __name__ == '__main__':
     doctest.testmod()
 
     # Create some computational art!
-    # TODO: Un-comment the generate_art function call after you
+    # TODO: Un-comment the generate_art function call after you <--Delete unnecessary lines
     #       implement remap_interval and evaluate_random_function
     #generate_art("myart_6.png")
     create_video_from_audio('Burn.wav')
