@@ -4,6 +4,10 @@ __author__ = 'davidabrahams'
 
 
 def get_string_from_file(file_name):
+    """
+    :param file_name: a string of the file name to read
+    :return:= a string of the text within than file
+    """
     return open(file_name).read()
 
 
@@ -16,9 +20,9 @@ def is_word_before_all_caps(string, index_of_colon):
     >>> is_word_before_all_caps('Now space : I love magic', 10)
     False
 
-    :param string:
-    :param index_of_colon:
-    :return:
+    :param string: the string to check
+    :param index_of_colon: the index of the colon to look before
+    :return: if the word directly before the colon is in all caps
     """
     index = index_of_colon
     while index >= 0 and not string[index].isspace():
@@ -30,9 +34,9 @@ def char_name(string, index_of_colon):
     """
     The name of the character starts right after the first '\n' before the ':' that follows his name
 
-    :param string:
-    :param index_of_colon:
-    :return:
+    :param string: the string to look through
+    :param index_of_colon: the index of the colon to look before
+    :return: the name of the character preceding the ':"
 
     >>> char_name("he said.\\nDUMBLEDORE: Stuff", 19)
     'DUMBLEDORE'
@@ -57,9 +61,9 @@ def find_quote(string, index_of_colon):
     "I'm not going home. Not really."
 
 
-    :param string:
-    :param index_of_colon:
-    :return:
+    :param string: the string to look through
+    :param index_of_colon: the index of the colon that indicates the start of a quote
+    :return: a string of the quote the character said
     """
 
     # look for the next speaking character and section break
@@ -72,49 +76,63 @@ def find_quote(string, index_of_colon):
     if next_break == -1 and next_colon == -1:
         end_of_quote = len(string)
     else:
+        # if we didn't find either a colon or a break, the quote ends at the one we found
         if next_colon == -1:
             end_of_quote = next_break
         elif next_break == -1:
             end_of_quote = next_colon
+        # if we found both, the quote ends at the first one
         else:
             end_of_quote = min(next_colon, next_break)
 
         # end the character's quote at the next new line
         while end_of_quote >= 0 and string[end_of_quote] != '\n':
             end_of_quote -= 1
+
+    # extract the quote and strip leading and trailing whitespace
     quote = string[index_of_colon + 2:end_of_quote].strip()
+    # replace characters like \n, \t, with spaces
     quote = re.sub("[\s]+", " ", quote)
+    # return it!
     return quote
 
 
 def file_to_chars_and_quotes(file_name):
+    """
+    :param file_name: the name of the file to get quotes from
+    :return: a list of tuples [(char_name, quote), (char_name, quote)]
+    """
+
+    # get the text from the file
     string = get_string_from_file(file_name)
+    # initialize the return variable and where we will be searching
     char_quote_pairs = []
     start_looking_at = 0
-    length = len(string)
-    print string[6380:6450]
-    while string.find(': ', start_looking_at):
-        colon_loc = string.find(': ', start_looking_at)
 
-        # If we don't find a colon, we've found all the quotes
-        if colon_loc == -1:
-            break
+    # search until we cannot find another ': '
+    while string.find(': ', start_looking_at) != -1:
+
+        colon_loc = string.find(': ', start_looking_at)
 
         # The name of the character starts right after the first whitespace before the ':' that follows his name
         char = char_name(string, colon_loc)
 
         # It's only a character name if it only contains capital letters
         if char.isupper():
-
+            # find the quote
             quote = find_quote(string, colon_loc)
+
+            # append the character name and quote to the return variable
             char_quote_pairs.append((char, quote))
+
+            # increment the loop control
             start_looking_at = colon_loc + len(quote)
         else:
+            # if this ': ' does not indicate a character, quote pair, keep looking
             start_looking_at = colon_loc + 2
+
     return char_quote_pairs
 
 if __name__ == '__main__':
     import doctest
     doctest.testmod()
-    for t in file_to_chars_and_quotes('scripts/hp2.txt'):
-        print t
