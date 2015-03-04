@@ -38,7 +38,7 @@ def get_json(url):
     return response_data
 
 def get_geocode_url(place_name):
-    pass
+    base = 'https://maps.googleapis.com/maps/api/geocode/json?'
 
 
 def get_lat_long(place_name):

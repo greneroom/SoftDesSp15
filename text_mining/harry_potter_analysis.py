@@ -57,11 +57,13 @@ def plot_hp_trio(file_name, smoothing):
     harry = get_character_sentiment_vs_time('HARRY', dictionary)
     ron = get_character_sentiment_vs_time('RON', dictionary)
     hermione = get_character_sentiment_vs_time('HERMIONE', dictionary)
+    malfoy = get_character_sentiment_vs_time('DRACO', dictionary)
 
     # take a moving average
     harry = convert_time_and_sentiment_to_moving_average(harry, smoothing)
     ron = convert_time_and_sentiment_to_moving_average(ron, smoothing)
     hermione = convert_time_and_sentiment_to_moving_average(hermione, smoothing)
+    malfoy = convert_time_and_sentiment_to_moving_average(malfoy, smoothing)
 
     # plot things
     plt.plot(harry[0], harry[1], label='Harry')
@@ -69,11 +71,11 @@ def plot_hp_trio(file_name, smoothing):
     plt.plot(hermione[0], hermione[1], label='Hermione')
     plt.ylabel('Sentiment level')
     plt.xlabel('Line number')
-    plt.title("Goblet of Fire")
+    plt.title("HP1")
     plt.legend()
     plt.show()
 
 
 
 if __name__ == '__main__':
-    plot_hp_trio('scripts/hp4.txt', 10)
+    plot_hp_trio('scripts/hp1.txt', 5)
