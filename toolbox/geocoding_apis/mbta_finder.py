@@ -9,7 +9,7 @@ https://sites.google.com/site/sd15spring/home/project-toolbox/geocoding-and-web-
 from pprint import pprint
 import re
 
-import urllib   # urlencode function
+import urllib  # urlencode function
 import urllib2  # urlopen function (better than urllib version)
 import json
 
@@ -32,13 +32,22 @@ def get_json(url):
 
     f = urllib2.urlopen(url)  # file object
     response_text = f.read()  # str
-    response_data = json.loads(response_text)  #dict
+    response_data = json.loads(response_text)  # dict
 
-    assert isinstance(response_data, dict)
     return response_data
+
 
 def get_geocode_url(place_name):
     base = 'https://maps.googleapis.com/maps/api/geocode/json?'
+    base += urllib.urlencode([('address', place_name)])
+    return base
+
+
+def get_mbta_url(lat, long):
+    base = 'http://realtime.mbta.com/developer/api/v2/stopsbylocation?'
+    base += urllib.urlencode(
+        [('api_key', 'wX9NwuHnZU2ToO7GmGR9uw'), ('lat', str(lat)), ('lon', str(long)), ('format', 'json')])
+    return base
 
 
 def get_lat_long(place_name):
@@ -49,11 +58,8 @@ def get_lat_long(place_name):
     See https://developers.google.com/maps/documentation/geocoding/
     for Google Maps Geocode API URL formatting requirements.
     """
-
-    place_name = re.sub(r"\s+", '+', place_name)  #convert whitespace to '+'
-
-    g_url = 'https://maps.googleapis.com/maps/api/geocode/json?address='
-    g_url += place_name
+    g_url = get_geocode_url(place_name)
+    print g_url
 
     json = get_json(g_url)
 
@@ -67,8 +73,6 @@ def get_lat_long(place_name):
     return lat, long
 
 
-
-
 def get_nearest_station(latitude, longitude):
     """
     Given latitude and longitude strings, return a (station_name, distance)
@@ -77,7 +81,10 @@ def get_nearest_station(latitude, longitude):
     See http://realtime.mbta.com/Portal/Home/Documents for URL
     formatting requirements for the 'stopsbylocation' API.
     """
-    pass
+    m_url = get_mbta_url(latitude, longitude)
+    mbta = get_json(m_url)
+
+    pprint(mbta)
 
 
 def find_stop_near(place_name):
@@ -89,4 +96,6 @@ def find_stop_near(place_name):
 
 
 if __name__ == '__main__':
-    pprint(get_lat_long('Shoreline Amphitheatre, Mountain View'))
+    # pprint(get_lat_long('Shoreline Amphitheatre, Mountain View'))
+
+    get_nearest_station(42.346961, 71.076640)
