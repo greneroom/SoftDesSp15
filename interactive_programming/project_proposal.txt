@@ -1,0 +1,38 @@
+Main Idea:
+
+The main idea for this project is to create a real-time process management tool similiar to Window's Task Manager, that allows the user to see their RAM and CPU usage in a graphical interface. Our minimum viable product is to allow the user to create a graphic that shows the distribution of CPU and RAM usage for processes at a single instant. We believe it is a realistic goal to allow the user to view their processes in real time using our graphical interface. Our stretch goal is to also allow them to manage their processes, similiar to Task Manager.
+
+
+Learning Goals:
+
+Learn how to access information about a computer's activity.
+Learn how to make interactive GUIs in python
+Learn good version control practices in a group coding project setting.
+Write readable, clean OOP code
+
+Planned Libraries:
+psutil for memory management information: https://code.google.com/p/psutil/
+bokeh for interactive data visuals: http://bokeh.pydata.org/en/latest/
+Obvious libraries (math, numpy, scipy, perhaps an api that manages processes?)
+
+Mid-proj check-in goal:
+
+>>> us = Tom_and_David()
+>>> us.find_data()
+>>> us.has_data()
+True
+>>> us.get_data().is_real_time()
+True
+>>> us.get_data().is_organized()
+True
+>>> us.has_visualization()
+Maybe
+
+Risks:
+
+Making GUIs is hard. Finding time to make a good gui and make the program functional is hard. Also, version control is hard. But:
+
+>>> us.is_determined()
+True.
+
+Also, we like coding. :D
