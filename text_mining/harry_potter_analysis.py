@@ -1,6 +1,6 @@
 __author__ = 'davidabrahams'
 
-import file_handler
+import file_handler #nice job importing other functions
 from pattern.en import sentiment
 import matplotlib.pyplot as plt
 from numpy import mean
@@ -28,7 +28,7 @@ def get_character_sentiment_vs_time(character_name, dictionary):
 
 def convert_time_and_sentiment_to_moving_average(time_and_sentiment, window):
     """
-    >>> convert_time_and_sentiment_to_moving_average(([0, 2, 4, 4, 6], [8, 8, 4, 6, 2]), 2)
+    >>> convert_time_and_sentiment_to_moving_average(([0, 2, 4, 4, 6], [8, 8, 4, 6, 2]), 2) #Nice job with doctests
     ([1.0, 3.0, 4.0, 5.0], [8.0, 6.0, 5.0, 4.0])
     :param time_and_sentiment: a tuple of line_numbers, sentiments
     :param window: how many terms the moving average should be over
@@ -54,13 +54,13 @@ def plot_hp_trio(file_name, smoothing):
     dictionary = dict_by_character(file_handler.file_to_chars_and_quotes(file_name))
 
     # get the data to plot for the trio
-    harry = get_character_sentiment_vs_time('HARRY', dictionary)
+    harry = get_character_sentiment_vs_time('HARRY', dictionary) #You could probably put all of this in a loop
     ron = get_character_sentiment_vs_time('RON', dictionary)
     hermione = get_character_sentiment_vs_time('HERMIONE', dictionary)
     malfoy = get_character_sentiment_vs_time('DRACO', dictionary)
 
     # take a moving average
-    harry = convert_time_and_sentiment_to_moving_average(harry, smoothing)
+    harry = convert_time_and_sentiment_to_moving_average(harry, smoothing) #this too, shorter code is usually better code
     ron = convert_time_and_sentiment_to_moving_average(ron, smoothing)
     hermione = convert_time_and_sentiment_to_moving_average(hermione, smoothing)
     malfoy = convert_time_and_sentiment_to_moving_average(malfoy, smoothing)
