@@ -1,0 +1,11 @@
+Diagonal:
+
+Rather than taking either of the two possible roundabout ways, Paul cuts diagonally through the middle, so the increase in cost for a diagonal move is ofset by the much shorter distance traversed.
+
+Jump:
+
+Paul could weave all the way through the lava without needing to jump, but it ends up costing less to just jump over the top wall and travel along the outside.
+
+Swamp:
+
+Similiar to the previous two, Paul ends up with a smaller cost going through the swamp than weaving around all the lava or jumping over it.
