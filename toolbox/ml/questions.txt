@@ -1,0 +1,7 @@
+1. The general trend of the curve is that the more data used for training, the more accurate the model is at predicting the test data.
+
+2. The beginning of the curve is noiser, due to randomness in strength of the model based on how "normal" or "abnormal" the number images the model was trained on are.
+
+3. At num_trials = 100, the curve smooths out a bit, at 1000, it is quite smooth.
+
+4. At higher values of C, the model is more accurate, and the curve is smoother.
